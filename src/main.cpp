@@ -29,10 +29,10 @@ int soilMoistureValue = 0;
 BH1750 lightMeter;
  
 void setup() {
-Serial.begin(115200);
-    pinMode(TdsSensorPin,INPUT);
-waterFlow = 0;
-attachInterrupt(0, pulse, RISING);  //DIGITAL Pin 2: Interrupt 0
+  Serial.begin(115200);
+  pinMode(TdsSensorPin,INPUT);
+  waterFlow = 0;
+  attachInterrupt(0, pulse, RISING);  //DIGITAL Pin 2: Interrupt 0
 sensors.begin();
  
   // Initialize the I2C bus (BH1750 library doesn't do this automatically)

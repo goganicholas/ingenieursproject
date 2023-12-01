@@ -1,3 +1,4 @@
+#include <Arduino.h>
 
 int sensorValue = 0; // Placeholder for sensor value
 int ledPin = 13; // Pin connected to the LED
