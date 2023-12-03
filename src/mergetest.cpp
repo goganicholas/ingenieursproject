@@ -128,9 +128,6 @@ void WaterKwaliteit() {
         digitalWrite(redLedPin, LOW); // Turn off the red LED
         delay(200); // Delay for 200 milliseconds
     }
-
-
-
 }
 int getMedianNum(int bArray[], int iFilterLen) 
 {
