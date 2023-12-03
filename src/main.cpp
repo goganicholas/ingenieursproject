@@ -1,3 +1,4 @@
+// include arduino.h niet nodig in code test arduino -> enkel in VSC!
 #include <Arduino.h>
 
 //LCDscherm
