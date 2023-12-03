@@ -1,3 +1,15 @@
+//LCDscherm
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(0x27, 20, 4);
+ 
+//Lampen
+int led1 = 13; //oranje
+int led2 = 12; //half - half
+int led3 = 11; //wit
+ 
+//Pomp
+const int pomp = 10;
+ 
 //WaterqualiTDS
 #define TdsSensorPin A1
 #define VREF 5.0      // analog reference voltage(Volt) of the ADC
@@ -13,37 +25,47 @@ volatile double waterFlow;
 //temperatuursensor
 #include <OneWire.h>
 #include <DallasTemperature.h>
-#define ONE_WIRE_BUS 4 // Data wire is conntec to the Arduino digital pin 4
+#define ONE_WIRE_BUS 25 // Data wire is conntec to the Arduino digital pin 25
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
+float Temperatuur;
  
 //soilmoisture
-const int AirValue = 610; //you need to change this value that you had recorded in t
-const int WaterValue = 70; //you need to change this value that you had recorded in th
+const int AirValue = 610; //gemeten waarde lucht
+const int WaterValue = 70; //gemeten waarde water
 int intervals = (AirValue - WaterValue)/3;
-int soilMoistureValue = 0;
-
+int soilMoistureValue;
+ 
 //lichtsensor
 #include <BH1750.h>
 #include <Wire.h>
 BH1750 lightMeter;
+int lux;
  
 void setup() {
+  pinMode(pomp, OUTPUT);
+  pinMode(led1, OUTPUT);
+  pinMode(led2, OUTPUT);
+  pinMode(led3, OUTPUT);
+ 
+  lcd.init();
+  lcd.clear();
+ 
   Serial.begin(115200);
   pinMode(TdsSensorPin,INPUT);
   waterFlow = 0;
   attachInterrupt(0, pulse, RISING);  //DIGITAL Pin 2: Interrupt 0
-sensors.begin();
+  sensors.begin();
  
   // Initialize the I2C bus (BH1750 library doesn't do this automatically)
-Wire.begin(0x23);
+  Wire.begin(0x23);
   // On esp8266 you can select SCL and SDA pins using Wire.begin(D4, D3);
   // For Wemos / Lolin D1 Mini Pro and the Ambient Light shield use
   // Wire.begin(D2, D1);
  
-lightMeter.begin();
+  lightMeter.begin();
  
-Serial.println(F("BH1750 Test begin"));
+  Serial.println(F("BH1750 Test begin"));
  
 }
  
@@ -95,10 +117,12 @@ int getMedianNum(int bArray[], int iFilterLen)
       return bTemp;
 }
  
+/*
 void WaterflowSensor()
 {
- 
+  mss gebruiken we die nog idk
 }
+*/
  
 void pulse()   //measure the quantity of square wave
 {
@@ -108,7 +132,8 @@ void pulse()   //measure the quantity of square wave
 void Temperatuursensor(){ 
   // Call sensors.requestTemperatures() to issue a global temperature and Requests to all devices on the bus
   sensors.requestTemperatures(); 
-  delay(500);
+  Temperatuur = sensors.getTempCByIndex(0);
+ 
 }
  
 void GrondVochtigheid() {
@@ -116,15 +141,51 @@ void GrondVochtigheid() {
 }
  
 void Lichtsensor() {
-  //float lux = lightMeter.readLightLevel();
+  lux = lightMeter.readLightLevel();
 }
  
-void loop(){
+void LCD()
+{
+  lcd.backlight();
+}
+ 
+//waarden moeten nog aangepast worden - 4000 is veel te hoog
+void Lampen() { 
+  if (lux < 4000){
+    int brightness1 = 70;
+    int brightness2 = 50;
+    analogWrite( led2, brightness2);
+    analogWrite( led1, brightness1 );} else if(lux < 5000){
+      int brightness2 = 50;
+      int brightness3 = 30;
+      analogWrite( led3, brightness3);
+      analogWrite( led2, brightness2);} else if(lux < 6000){
+        int brightness3 = 30;
+        analogWrite( led3, brightness3);} else{
+          int brightness1 = 0;
+          int brightness2 = 0;
+          int brightness3 = 0;}
+}
+ 
+void Pomp() {
+  if (soilMoistureValue < 250) {      //pomp aan laten spirngen wanneer grond droog is
+    digitalWrite(pomp, HIGH);
+  }
+  if (soilMoistureValue > 430) {           //pomp af laten springen wanneer grond nat is
+    digitalWrite(pomp,LOW);
+  }
+}
+ 
+  void loop(){
+ 
   WaterKwaliteit();
   WaterflowSensor();
   Temperatuursensor();
   GrondVochtigheid();
   Lichtsensor();
+  LCD();
+  Lampen();
+  Pomp();
  
   //print kwaliteit
   Serial.print("TDS Value:");
@@ -137,32 +198,42 @@ void loop(){
   Serial.println("   L");
  
   //print temperatuur
-  float Temperatuur = sensors.getTempCByIndex(0);
   Serial.print("Celsius temperature: ");
-  Serial.println(Temperatuur); 
-  //Serial.print(" - Fahrenheit temperature: ");
-  //Serial.println(sensors.getTempFByIndex(0));
+  Serial.println(Temperatuur);
+ 
+  lcd.setCursor(0, 0);
+  lcd.print("                    ");
+  lcd.setCursor(0, 0);
+  lcd.print("Temp: ");
+  lcd.print(Temperatuur);
+  lcd.print(" C");
  
   //print grondvochtigheid
-  if(soilMoistureValue > WaterValue && soilMoistureValue < (WaterValue + intervals))
+  lcd.setCursor(0, 1);
+  if(soilMoistureValue > WaterValue && soilMoistureValue < (WaterValue + intervals)) //70 < waarde < 250
     {
-      Serial.print("Very Wet");
+      Serial.println("Vocht: Very Wet, Waarde: ");
+      Serial.println(soilMoistureValue);
+      lcd.print("Vocht: Very Wet");
     }
-  else if(soilMoistureValue > (WaterValue + intervals) && soilMoistureValue < (AirValue - intervals))
+  else if(soilMoistureValue > (WaterValue + intervals) && soilMoistureValue < (AirValue - intervals)) //250 < waarde < 430
     {
-      Serial.print("Wet");
+      Serial.println("Vocht: Wet, Waarde: ");
+      Serial.println(soilMoistureValue);
+      lcd.print("Vocht: Wet");
     }
-  else if(soilMoistureValue < AirValue && soilMoistureValue > (AirValue - intervals))
+  else if(soilMoistureValue < AirValue && soilMoistureValue > (AirValue - intervals)) //430 < waarde < 610
     {
-      Serial.println("Dry");
+      Serial.print("Vocht: Dry, Waarde: ");
+      Serial.println(soilMoistureValue);
+      lcd.print("Vocht: Dry");
     }
  
   //print licht
-  float lux = lightMeter.readLightLevel();
   Serial.print("Light: ");
   Serial.print(lux);
   Serial.println(" lx");
  
-  delay(1000);
+  delay(500);
  
 }
