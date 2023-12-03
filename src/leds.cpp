@@ -1,22 +1,6 @@
 #include <Arduino.h>
 
-int sensorValue = 0; // Placeholder for sensor value
-int ledPin = 13; // Pin connected to the LED
-
-void setup() {
-  pinMode(ledPin, OUTPUT); // Set the LED pin as output
-}
-
-void loop() {
-  sensorValue = analogRead(A0); // Read the sensor value from analog pin A0
-
-  if (sensorValue > 15) {
-    digitalWrite(ledPin, HIGH); // Turn on the LED
-  } else {
-    digitalWrite(ledPin, LOW); // Turn off the LED
-  }
-}
-int sensorValue = 0; // Placeholder for sensor value
+int tdsValue;
 int greenLedPin = 13; // Pin connected to the green LED
 int yellowLedPin = 12; // Pin connected to the yellow LED
 int redLedPin = 11; // Pin connected to the red LED
@@ -27,20 +11,20 @@ void setup() {
     pinMode(redLedPin, OUTPUT); // Set the red LED pin as output
 }
 
-void loop() {
-    sensorValue = analogRead(A0); // Read the sensor value from analog pin A0
+void waterqualiteitKLEUR() {
+    tdsValue = analogRead(A0); // Read the sensor value from analog pin A0
 
-    if (sensorValue > 15 && sensorValue <= 50) {
+    if (tdsValue > 15 && tdsValue <= 50) {
         digitalWrite(greenLedPin, HIGH); // Turn on the green LED
         digitalWrite(yellowLedPin, LOW); // Turn off the yellow LED
         digitalWrite(redLedPin, LOW); // Turn off the red LED
         delay(500); // Delay for 500 milliseconds
-    } else if (sensorValue > 50 && sensorValue <= 100) {
+    } else if (tdsValue > 50 && tdsValue <= 100) {
         digitalWrite(greenLedPin, LOW); // Turn off the green LED
         digitalWrite(yellowLedPin, HIGH); // Turn on the yellow LED
         digitalWrite(redLedPin, LOW); // Turn off the red LED
         delay(1000); // Delay for 1000 milliseconds
-    } else if (sensorValue > 100) {
+    } else if (tdsValue > 100) {
         digitalWrite(greenLedPin, LOW); // Turn off the green LED
         digitalWrite(yellowLedPin, LOW); // Turn off the yellow LED
         digitalWrite(redLedPin, HIGH); // Turn on the red LED
