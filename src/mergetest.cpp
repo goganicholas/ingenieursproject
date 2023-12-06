@@ -23,9 +23,9 @@ int analogBufferIndex = 0,copyIndex = 0;
 float averageVoltage = 0,tdsValue = 0,temperature = 25;
 
 //testmergeleds
-                int greenLedPin = 13; // Pin connected to the green LED
-                int yellowLedPin = 12; // Pin connected to the yellow LED
-                int redLedPin = 11; // Pin connected to the red LED
+                int greenLedPin = 3; // Pin connected to the green LED
+                int yellowLedPin = 4; // Pin connected to the yellow LED
+                int redLedPin = 5; // Pin connected to the red LED
 
 
 
@@ -107,7 +107,7 @@ void WaterKwaliteit() {
       float compensationVolatge=averageVoltage/compensationCoefficient;  //temperature compensation
       tdsValue=(133.42*compensationVolatge*compensationVolatge*compensationVolatge - 255.86*compensationVolatge*compensationVolatge + 857.39*compensationVolatge)*0.5; //convert voltage value to tds value
     } 
-// TEST KLEURCODE LEDS WATERQUALI
+                                                              // TEST KLEURCODE LEDS WATERQUALI
     if (tdsValue > 15 && tdsValue <= 50) {
         digitalWrite(greenLedPin, HIGH); // Turn on the green LED
         digitalWrite(yellowLedPin, LOW); // Turn off the yellow LED
