@@ -171,10 +171,10 @@ void Lampen() {
 }
  
 void Pomp() {
-  if (soilMoistureValue < 250) {      //pomp aan laten spirngen wanneer grond droog is
+  if (soilMoistureValue > 430) {      //pomp aan laten spirngen wanneer grond droog is
     digitalWrite(pomp, HIGH);
   }
-  if (soilMoistureValue > 430) {           //pomp af laten springen wanneer grond nat is
+  if (soilMoistureValue < 250) {           //pomp af laten springen wanneer grond nat is
     digitalWrite(pomp,LOW);
   }
 }

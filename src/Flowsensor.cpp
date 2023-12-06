@@ -22,7 +22,6 @@ wordt de functie pulseCounter geactiveerd. Deze functie telt het aantal pulsen,
 wat overeenkomt met de hoeveelheid water die door de sensor stroomt.
 */
 
-
 }
 
 void loop()

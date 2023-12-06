@@ -213,6 +213,7 @@ void Pomp() {
     digitalWrite(pomp,LOW);
   }
 }
+
  
   void loop(){
  
@@ -225,7 +226,7 @@ void Pomp() {
   Lampen();
   Pomp();
  
-  //print kwaliteit
+  //print kwaliteit water PPM
   Serial.print("TDS Value:");
   Serial.print(tdsValue,0);
   Serial.println("ppm");
