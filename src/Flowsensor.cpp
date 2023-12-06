@@ -3,7 +3,7 @@
 const int flowSensorPin = 2; // Afhankelijk van op welke pin we de sensor aansluiten
 volatile int totalLiters = 0; // Variabele om de totale liters water op te slaan
 
-const float pulsesPerLiter = 1000; // Aantal pulsen per liter water
+const float pulsesPerLiter = 5880; // Aantal pulsen per liter water
 
 void pulseCounter()
 {
